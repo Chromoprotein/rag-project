@@ -1,0 +1,3 @@
+This is a simple writing assistant I made for generating scenes for my novel. It uses RAG for retrieving information about my novel (characters, locations, plot details) so the details stay consistent and the GPT doesn't invent random incorrect details that require more editing. You could easily substitute my data set with information about your own novel.
+
+Stack: Python | Flask | React | Typescript | OpenAI API | SentenceTransformers
