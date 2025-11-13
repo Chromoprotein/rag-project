@@ -11,7 +11,7 @@ def generate():
     data = request.get_json()
     user_prompt = data.get("prompt", "")
     output = generate_answer(user_prompt)
-    return jsonify({"result": output})
+    return jsonify(output)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -2,16 +2,19 @@ import csv
 from sentence_transformers import SentenceTransformer, util
 import torch
 from openai import OpenAI
+import os
 
 client = OpenAI()
 
 # Load embeddings and embeddings model
 bi_encoder = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
-semantic_search_model = torch.load('semantic_search_model.pt')
+torch_model_path = os.path.join(os.path.dirname(__file__), "semantic_search_model.pt")
+semantic_search_model = torch.load(torch_model_path)
 
 # Load facts dataset
+dataset_path = os.path.join(os.path.dirname(__file__), "ragdata.csv")
 passages = []
-with open('ragdata.csv') as csv_file:
+with open(dataset_path) as csv_file:
     csv_reader = csv.reader(csv_file)
     for row in csv_reader:
         passages.append(row[0])
@@ -74,5 +77,11 @@ def generate_answer(user_prompt: str) -> str:
         ]
     )
 
-    result = writing_response.choices[0].message.content.strip()
-    return result
+    result = writing_response.choices[0].message.content
+
+    # Return everything as a dictionary
+    return {
+        "queries": queries,
+        "context": context,
+        "result": result
+    }
