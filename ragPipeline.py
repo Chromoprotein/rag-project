@@ -1,15 +1,14 @@
 import csv
-from sentence_transformers import SentenceTransformer, util
-import torch
+from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 import os
+import numpy as np
+import faiss
 
 client = OpenAI()
 
-# Load embeddings and embeddings model
-bi_encoder = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
-torch_model_path = os.path.join(os.path.dirname(__file__), "semantic_search_model.pt")
-semantic_search_model = torch.load(torch_model_path)
+# Load embeddings model
+bi_encoder = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Load facts dataset
 dataset_path = os.path.join(os.path.dirname(__file__), "ragdata.csv")
@@ -19,7 +18,41 @@ with open(dataset_path) as csv_file:
     for row in csv_reader:
         passages.append(row[0])
 
-def generate_answer(user_prompt: str) -> str:
+#Precompute or load embeddings
+embeddings_path = os.path.join(os.path.dirname(__file__), "embeddings.npy")
+if not os.path.exists(embeddings_path):
+    embeddings = bi_encoder.encode(
+        passages, batch_size=32, convert_to_tensor=False, show_progress_bar=True)
+
+    np.save(embeddings_path, embeddings)
+else:
+    embeddings = np.load(embeddings_path)
+
+# Convert to float32 for FAISS
+embeddings = embeddings.astype("float32")
+
+index_path = os.path.join(os.path.dirname(__file__), "faiss_index.index")
+
+if not os.path.exists(index_path):
+    dim = embeddings.shape[1]
+    index = faiss.IndexFlatL2(dim)
+    index.add(embeddings)
+
+    faiss.write_index(index, index_path)
+else:
+    index = faiss.read_index(index_path)
+
+def retrieve(query, top_k=5):
+    query_vec = bi_encoder.encode(
+        query,
+        convert_to_tensor=False
+    ).astype("float32").reshape(1, -1)
+
+    distances, indices = index.search(query_vec, top_k)
+
+    return [passages[i] for i in indices[0]]
+
+def generate_queries_and_context(user_prompt: str):
 
     # --- 1. Generate related queries using GPT ---
     query_prompt = f"""
@@ -28,7 +61,6 @@ def generate_answer(user_prompt: str) -> str:
 
     Writing prompt: "{user_prompt}"
     """
-
     query_response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -37,31 +69,23 @@ def generate_answer(user_prompt: str) -> str:
         ]
     )
 
-    # clean up model output
     query_text = query_response.choices[0].message.content.strip()
     queries = [q.strip("- ").strip() for q in query_text.split("\n") if q.strip()]
-    print("\nGenerated queries:", queries)
+    if not queries:
+        queries = [user_prompt]
 
     # --- 2. Retrieve relevant context ---
-
     retrieved_passages = []
+    for q in queries:
+        retrieved_passages.extend(retrieve(q))
 
-    for query in queries:
-        question_embedding = bi_encoder.encode_query(query, convert_to_tensor=True)
+    context = "\n".join(list(dict.fromkeys(retrieved_passages))[:20])
+    return queries, context
 
-        hits = util.semantic_search(question_embedding, semantic_search_model, top_k=5)[0]
+def stream_generated_text(user_prompt, context):
 
-        for hit in hits:
-            retrieved_passages.append(passages[hit["corpus_id"]])
-
-    # remove duplicates by turning into a dictionary and merge into context
-    context = "\n".join(list(dict.fromkeys(retrieved_passages)))
-
-    print(retrieved_passages)
-
-    # --- 3. Generate writing with retrieved context ---
     writing_prompt = f"""
-    You may use the context below to stay consistent with story facts, but write naturally. If the context seems irrelevant, you may ignore them.
+    You may use the context below to stay consistent with story facts.
     Context:
     {context}
 
@@ -69,19 +93,17 @@ def generate_answer(user_prompt: str) -> str:
     {user_prompt}
     """
 
-    writing_response = client.chat.completions.create(
+    response_stream = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "You are a writing assistant for a sci-fi novel."},
+            {"role": "system", "content": "You are a writing assistant for a sci-fi novel. Format your writing using markdown."},
             {"role": "user", "content": writing_prompt}
-        ]
+        ],
+        stream=True
     )
 
-    result = writing_response.choices[0].message.content
-
-    # Return everything as a dictionary
-    return {
-        "queries": queries,
-        "context": context,
-        "result": result
-    }
+    for chunk in response_stream:
+        delta = chunk.choices[0].delta
+        text = getattr(delta, "content", "")
+        if text:
+            yield text

@@ -1,36 +1,66 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import './output.css';
 import ReactMarkdown from "react-markdown";
 
 function App() {
   const [prompt, setPrompt] = useState("");
-  const [result, setResult] = useState("");
   const [queries, setQueries] = useState<string[]>([]);
   const [context, setContext] = useState("");
   const [loading, setLoading] = useState(false);
+  const [streamingText, setStreamingText] = useState("");
+  const [finalText, setFinalText] = useState("");
+  const textRef = useRef("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setResult("");
+    setStreamingText("");
+    setFinalText("");
     setQueries([]);
     setContext("");
+    setLoading(true);
+    textRef.current = "";
 
-    try {
-      const res = await fetch("http://localhost:5000/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
-      const data = await res.json();
-      setResult(data.result);
-      setQueries(data.queries);
-      setContext(data.context);
-    } catch (err) {
-      setResult("Error: could not connect to server.");
-    } finally {
+    // Start SSE stream
+    const evtSource = new EventSource(
+      `http://localhost:5000/generate?prompt=${encodeURIComponent(prompt)}`
+    );
+
+    // Streamed text chunks
+    evtSource.onmessage = (e) => {
+      try {
+        const chunk = JSON.parse(e.data);
+        textRef.current += chunk;
+        setStreamingText(textRef.current);
+      } catch {
+        // Fallback for non-JSON data
+        textRef.current += e.data;
+        setStreamingText(textRef.current);
+      }
+    };
+
+    // Metadata: queries and context
+    evtSource.addEventListener("metadata", (e: any) => {
+      try {
+        const data = JSON.parse(e.data);
+        setQueries(data.queries);
+        setContext(data.context);
+      } catch {
+        setQueries([]);
+        setContext("");
+      }
+    });
+
+    // Stream end
+    evtSource.addEventListener("end", () => {
+      evtSource.close();
+      setFinalText(textRef.current); 
+      console.log("ref:", textRef.current);
+      console.log("state:", streamingText);
       setLoading(false);
-    }
+    });
+
+    // Cleanup if user navigates away
+    return () => evtSource.close();
   };
 
   return (
@@ -51,30 +81,26 @@ function App() {
         </button>
       </form>
 
-    {queries.length > 0 && (
-      <div className="mt-4">
-        <h3 className="font-semibold">Generated Queries:</h3>
-        <ul className="list-disc ml-6">
-          {queries.map((q, i) => <li key={i}>{q}</li>)}
-        </ul>
-      </div>
-    )}
-
-    {context && (
-      <div className="mt-4">
-        <h3 className="font-semibold">Retrieved Context:</h3>
-        <pre className="whitespace-pre-wrap bg-gray-100 p-3 rounded">{context}</pre>
-      </div>
-    )}
-
-    {result && (
-      <div className="mt-6">
-        <h3 className="font-semibold">Generated Writing:</h3>
-        <div className="mt-2 bg-gray-50 p-4 rounded-lg">
-          <ReactMarkdown>{result}</ReactMarkdown>
+      {queries.length > 0 && (
+        <div className="mt-4">
+          <h3>Generated Queries:</h3>
+          <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
         </div>
-      </div>
-    )}
+      )}
+
+      {context && (
+        <div className="mt-4">
+          <h3>Retrieved Context:</h3>
+          <pre className="whitespace-pre-wrap">{context}</pre>
+        </div>
+      )}
+
+      {(streamingText || finalText) && (
+        <div className="mt-6">
+          <h3>Generated Writing:</h3>
+            <ReactMarkdown>{loading ? streamingText : finalText}</ReactMarkdown>
+        </div>
+      )}
 
     </div>
   );
