@@ -81,6 +81,14 @@ function FactsTable() {
     fetchFacts();
   }, []);
 
+  const sortedFacts = [...draftFacts].sort((a, b) => {
+    const c1 = a.category.toLowerCase();
+    const c2 = b.category.toLowerCase();
+    if (c1 < c2) return -1;
+    if (c1 > c2) return 1;
+    return a.text.localeCompare(b.text);
+  });
+
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <h3 className="text-xl font-bold mb-3">Facts</h3>
@@ -114,7 +122,7 @@ function FactsTable() {
 
       {/* Facts list */}
       <ul className="flex flex-col gap-4">
-        {draftFacts.map((fact, i) => (
+        {sortedFacts.map((fact, i) => (
           <li
             key={i}
             className="border-b border-slate-200 pb-4 flex flex-col gap-2"
