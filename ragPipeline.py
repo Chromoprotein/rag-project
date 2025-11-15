@@ -4,6 +4,7 @@ from openai import OpenAI
 import os
 import numpy as np
 import faiss
+from fact_utils import load_facts
 
 client = OpenAI()
 
@@ -11,12 +12,8 @@ client = OpenAI()
 bi_encoder = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Load facts dataset
-dataset_path = os.path.join(os.path.dirname(__file__), "ragdata.csv")
-passages = []
-with open(dataset_path) as csv_file:
-    csv_reader = csv.reader(csv_file)
-    for row in csv_reader:
-        passages.append(row[0])
+facts = load_facts()
+passages = [fact["text"] for fact in facts if fact["text"]]
 
 #Precompute or load embeddings
 embeddings_path = os.path.join(os.path.dirname(__file__), "embeddings.npy")

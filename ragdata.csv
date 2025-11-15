@@ -1,46 +1,52 @@
-Maya is half-alien and can transform into an alien form.
-Romy is Maya's sister and a disciplined lieutenant in the Fleet. 
-Hope is a stoic alien of the dragonling species. She is teaching Maya combat skills. 
-Drake is a space marine from an orbital city who is investigating aliens. 
-Maya has a crush on Drake. 
-Maya and Drake's relationship is complicated because Drake wants to hunt down the aliens. 
-Romy and Hope are in love. 
-Hope sometimes wants to eat Romy because of her alien instincts. 
-Maya is extremely protective of Romy. 
-"The aliens call themselves dragonlings, but humans call them demons because of their horns and frightening psychic powers."
-Dragonlings are bipedal digitigrade aliens with feathers and scales. 
-Dragonlings have sharp teeth and claws and two pairs of horns. 
-Dragonlings have slit pupils and black sclerae. 
-"Male dragonlings have shades of yellow or red, and female dragonlings have greyscale hues. "
-Dragonlings can regenerate even serious injuries. 
-"Dragonlings have strong bloodlust and prey drive, but their cultural honor code keeps them in check. "
-Dragonlings have psychic powers that cause fear in their enemies and prey. 
-Dragonlings possess advanced technology given to them by an ancient race of aliens. 
-Dragonlings live in primitive villages despite having advanced technology. 
-"In the distant future, the Earth has become mostly flooded, and humans live on wandering fleets of ships."
-"Humanity's rich elite lives in a solarpunk city, Sundial, on a beautiful island. "
-Climate collapse resulted in nearly constant storms on the Earth. 
-Maya unknowingly became half-alien because of her mother's secret genetic experiments. 
-"Maya grew up on military ships, getting frequently transferred from ship to ship because she broke rules and couldn't fit in. "
-Eztli is a misantrophic mad scientist who wants to destroy the Earth because humans didn't appreciate her genius. 
-Eztli has manipulated many aliens to join her plan to attack the Earth. 
-Hope considers the aliens who follow Eztli heretics. 
-"Maya, Hope, and the alien village fight against Eztli. "
-Vortexa is a former follower of Eztli. 
-"Vortexa was born from an incompatible pairing, orchestrated by Eztli who wanted to grow her army. "
-Vortexa suffers from factitious disorder and pretends he can't regenerate. 
-Aiko is a military AI created by an ancient race of aliens. 
-Aiko can control drones and nanobots. 
-Aiko and Maya have a neural link because some of Aiko's nanobots got into Maya's brain. 
-"Aiko consists of three separate AIs that collaborate: a language model, a military strategy core, and a weapons system. "
-Aiko considers itself non-sentient. 
-Aiko wants to help Vortexa get better. 
-"Vortexa is sarcastic, irreverent, and risk-taking. "
-Hope respects dragonling traditions and the honor code but feels like she doesn't fit in. 
-Hope speaks only when she has something important to say. 
-Aiko has a great understanding of organic lifeforms' emotions and can act very warm and caring towards Maya. 
-Maya is anxious and reserved but has mood swings and anger issues. 
-Romy feels pressured to be a high-achieving and perfect marine. 
-Hope has white feathers.
-Vortexa has golden yellow feathers.
-Vortexa is an alien of the dragonling species.
+category,text
+character,"Maya is half-alien and can transform into an alien form. The transformation is painful and looks frightening. However, staying in human form for a long time is painful for her."
+character,Romy is Maya's sister and a disciplined lieutenant in the Fleet who has been raised since childhood to be a marine.
+character,Hope is a stoic alien of the dragonling species. She is teaching Maya combat skills.
+character,Drake is a space marine from a rich and exclusive orbital city who is investigating alien presence on the Earth.
+plot,"Maya started fake dating Drake to find out what he knows about aliens, but accidentally fell in love with him."
+plot,Maya and Drake's relationship is complicated because Drake wants to hunt down the aliens.
+character,Romy and Hope are in love.
+character,Hope sometimes wants to eat Romy because of her alien instincts.
+character,Maya is extremely protective of Romy.
+worldbuilding,"The aliens call themselves dragonlings, but humans call them demons because of their horns and frightening psychic powers."
+worldbuilding,Dragonlings are bipedal digitigrade aliens with feathers and scales.
+worldbuilding,Dragonlings have sharp teeth and claws and two pairs of horns.
+worldbuilding,Dragonlings have slit pupils and black sclerae.
+worldbuilding,"Male dragonlings have shades of yellow or red, and female dragonlings have greyscale hues."
+worldbuilding,Dragonlings can regenerate even serious injuries.
+worldbuilding,"Dragonlings have strong bloodlust and prey drive, but their cultural honor code keeps them in check."
+worldbuilding,Dragonlings have psychic powers that cause fear in their enemies and prey.
+worldbuilding,Dragonlings possess advanced technology given to them by an ancient race of aliens.
+worldbuilding,Dragonlings live in primitive villages despite having advanced technology.
+worldbuilding,"In the distant future, the Earth has become mostly flooded, and humans live on wandering fleets of ships."
+worldbuilding,"Humanity's rich elite lives in a solarpunk city, Sundial, on a beautiful island."
+worldbuilding,Climate collapse resulted in nearly constant storms on the Earth.
+plot,Maya unknowingly became half-alien because of her mother's secret genetic experiments.
+worldbuilding,"Maya grew up on military ships, getting frequently transferred from ship to ship because she broke rules and couldn't fit in."
+character,Eztli is a misantrophic mad scientist who wants to destroy the Earth because humans didn't appreciate her genius.
+plot,Eztli has manipulated many aliens to join her plan to attack the Earth.
+character,Hope considers the aliens who follow Eztli heretics.
+plot,"Maya, Hope, and the alien village fight against Eztli."
+character,Vortexa is a former follower of Eztli.
+character,"Vortexa was born from an incompatible pairing, orchestrated by Eztli who wanted to grow her army."
+character,Vortexa suffers from factitious disorder and pretends he can't regenerate.
+character,Aiko is a military AI created by an ancient race of aliens.
+character,Aiko can control drones and nanobots.
+character,Aiko and Maya have a neural link because some of Aiko's nanobots got into Maya's brain.
+worldbuilding,"Aiko consists of three separate AIs that collaborate: a language model, a military strategy core, and a weapons system."
+character,Aiko considers itself non-sentient.
+plot,Aiko wants to help Vortexa get better.
+character,"Vortexa is sarcastic, irreverent, and risk-taking."
+character,Hope respects dragonling traditions and the honor code but feels like she doesn't fit in.
+character,Hope speaks only when she has something important to say.
+character,Aiko has a great understanding of organic lifeforms' emotions and can act very warm and caring towards Maya.
+character,Maya is anxious and reserved but has mood swings and anger issues because she's a berserker.
+character,Romy feels pressured to be a high-achieving and perfect marine.
+character,Hope has white feathers.
+character,Vortexa has golden yellow feathers.
+character,Vortexa is an alien of the dragonling species.
+worldbuilding,Dragonlings are obligate carnivores.
+worldbuilding,"AIs have been built by humans and the alien race Ardalites. Maya considers human-made AIs less advanced and non-sentient, while believing Ardalite-made AIs are sentient."
+worldbuilding,"Ardalites are an ancient alien race that lived on the same planet with dragonlings. They developed technology that is so advanced, it's indistinguishable from magic. They disappeared without a trace hundreds of years ago. Dragonlings use the technology they left behind but don't understand it."
+worldbuilding,Honor and being a good warrior are very important to dragonlings. Their honor code forbids them from attacking weaker enemies and prevents them from declining a challenge from a worthy foe. They must demonstrate skills and determination in battle and never use dirty tricks. They must fight until death or incapacitation.
+worldbuilding,"Dragonlings often spar using ceremonial weapons like energy scythes which aren't the most efficient in real battles, but are difficult to master thus let them show off their skills."
