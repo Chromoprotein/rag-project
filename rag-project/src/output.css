@@ -227,9 +227,6 @@
   .py-2 {
     padding-block: calc(var(--spacing) * 2);
   }
-  .whitespace-pre-wrap {
-    white-space: pre-wrap;
-  }
   .text-white {
     color: var(--color-white);
   }

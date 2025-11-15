@@ -52,7 +52,7 @@ def retrieve(query, top_k=5):
 
     return [passages[i] for i in indices[0]]
 
-def generate_queries_and_context(user_prompt: str):
+def generate_queries_and_context_stream(user_prompt: str):
 
     # --- 1. Generate related queries using GPT ---
     query_prompt = f"""
@@ -74,13 +74,22 @@ def generate_queries_and_context(user_prompt: str):
     if not queries:
         queries = [user_prompt]
 
-    # --- 2. Retrieve relevant context ---
-    retrieved_passages = []
-    for q in queries:
-        retrieved_passages.extend(retrieve(q))
+    # stream the queries
+    yield ("queries", queries)
 
-    context = "\n".join(list(dict.fromkeys(retrieved_passages))[:20])
-    return queries, context
+    # --- 2. Retrieve relevant context (streamed) ---
+    seen = set()
+    count = 0
+
+    for q in queries:
+        for passage in retrieve(q):
+            if passage not in seen:
+                seen.add(passage)
+                yield ("context", passage)
+                count += 1
+
+            if count >= 20:
+                return
 
 def stream_generated_text(user_prompt, context):
 

@@ -25,37 +25,25 @@ function App() {
       `http://localhost:5000/generate?prompt=${encodeURIComponent(prompt)}`
     );
 
-    // Streamed text chunks
-    evtSource.onmessage = (e) => {
-      try {
-        const chunk = JSON.parse(e.data);
-        textRef.current += chunk;
-        setStreamingText(textRef.current);
-      } catch {
-        // Fallback for non-JSON data
-        textRef.current += e.data;
-        setStreamingText(textRef.current);
-      }
-    };
+    evtSource.addEventListener("queries", e => {
+      setQueries(JSON.parse(e.data));
+    });
 
-    // Metadata: queries and context
-    evtSource.addEventListener("metadata", (e: any) => {
-      try {
-        const data = JSON.parse(e.data);
-        setQueries(data.queries);
-        setContext(data.context);
-      } catch {
-        setQueries([]);
-        setContext("");
-      }
+    evtSource.addEventListener("context", e => {
+      const passage = JSON.parse(e.data);
+      setContext(prev => prev ? prev + "\n\n" + passage : passage);
+    });
+
+    evtSource.addEventListener("text", e => {
+      const chunk = JSON.parse(e.data);
+      textRef.current += chunk;
+      setStreamingText(textRef.current);
     });
 
     // Stream end
     evtSource.addEventListener("end", () => {
       evtSource.close();
-      setFinalText(textRef.current); 
-      console.log("ref:", textRef.current);
-      console.log("state:", streamingText);
+      setFinalText(textRef.current);
       setLoading(false);
     });
 
@@ -91,7 +79,7 @@ function App() {
       {context && (
         <div className="mt-4">
           <h3>Retrieved Context:</h3>
-          <pre className="whitespace-pre-wrap">{context}</pre>
+          <ReactMarkdown>{context}</ReactMarkdown>
         </div>
       )}
 
