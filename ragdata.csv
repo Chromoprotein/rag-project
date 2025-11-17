@@ -1,52 +1,52 @@
-category,text
-character,"Maya is half-alien and can transform into an alien form. The transformation is painful and looks frightening. However, staying in human form for a long time is painful for her."
-character,Romy is Maya's sister and a disciplined lieutenant in the Fleet who has been raised since childhood to be a marine.
-character,Hope is a stoic alien of the dragonling species. She is teaching Maya combat skills.
-character,Drake is a space marine from a rich and exclusive orbital city who is investigating alien presence on the Earth.
-plot,"Maya started fake dating Drake to find out what he knows about aliens, but accidentally fell in love with him."
-plot,Maya and Drake's relationship is complicated because Drake wants to hunt down the aliens.
-character,Romy and Hope are in love.
-character,Hope sometimes wants to eat Romy because of her alien instincts.
-character,Maya is extremely protective of Romy.
-worldbuilding,"The aliens call themselves dragonlings, but humans call them demons because of their horns and frightening psychic powers."
-worldbuilding,Dragonlings are bipedal digitigrade aliens with feathers and scales.
-worldbuilding,Dragonlings have sharp teeth and claws and two pairs of horns.
-worldbuilding,Dragonlings have slit pupils and black sclerae.
-worldbuilding,"Male dragonlings have shades of yellow or red, and female dragonlings have greyscale hues."
-worldbuilding,Dragonlings can regenerate even serious injuries.
-worldbuilding,"Dragonlings have strong bloodlust and prey drive, but their cultural honor code keeps them in check."
-worldbuilding,Dragonlings have psychic powers that cause fear in their enemies and prey.
-worldbuilding,Dragonlings possess advanced technology given to them by an ancient race of aliens.
-worldbuilding,Dragonlings live in primitive villages despite having advanced technology.
-worldbuilding,"In the distant future, the Earth has become mostly flooded, and humans live on wandering fleets of ships."
-worldbuilding,"Humanity's rich elite lives in a solarpunk city, Sundial, on a beautiful island."
-worldbuilding,Climate collapse resulted in nearly constant storms on the Earth.
-plot,Maya unknowingly became half-alien because of her mother's secret genetic experiments.
-worldbuilding,"Maya grew up on military ships, getting frequently transferred from ship to ship because she broke rules and couldn't fit in."
-character,Eztli is a misantrophic mad scientist who wants to destroy the Earth because humans didn't appreciate her genius.
-plot,Eztli has manipulated many aliens to join her plan to attack the Earth.
-character,Hope considers the aliens who follow Eztli heretics.
-plot,"Maya, Hope, and the alien village fight against Eztli."
-character,Vortexa is a former follower of Eztli.
-character,"Vortexa was born from an incompatible pairing, orchestrated by Eztli who wanted to grow her army."
-character,Vortexa suffers from factitious disorder and pretends he can't regenerate.
-character,Aiko is a military AI created by an ancient race of aliens.
-character,Aiko can control drones and nanobots.
-character,Aiko and Maya have a neural link because some of Aiko's nanobots got into Maya's brain.
-worldbuilding,"Aiko consists of three separate AIs that collaborate: a language model, a military strategy core, and a weapons system."
-character,Aiko considers itself non-sentient.
-plot,Aiko wants to help Vortexa get better.
-character,"Vortexa is sarcastic, irreverent, and risk-taking."
-character,Hope respects dragonling traditions and the honor code but feels like she doesn't fit in.
-character,Hope speaks only when she has something important to say.
-character,Aiko has a great understanding of organic lifeforms' emotions and can act very warm and caring towards Maya.
-character,Maya is anxious and reserved but has mood swings and anger issues because she's a berserker.
-character,Romy feels pressured to be a high-achieving and perfect marine.
-character,Hope has white feathers.
-character,Vortexa has golden yellow feathers.
-character,Vortexa is an alien of the dragonling species.
-worldbuilding,Dragonlings are obligate carnivores.
-worldbuilding,"AIs have been built by humans and the alien race Ardalites. Maya considers human-made AIs less advanced and non-sentient, while believing Ardalite-made AIs are sentient."
-worldbuilding,"Ardalites are an ancient alien race that lived on the same planet with dragonlings. They developed technology that is so advanced, it's indistinguishable from magic. They disappeared without a trace hundreds of years ago. Dragonlings use the technology they left behind but don't understand it."
-worldbuilding,Honor and being a good warrior are very important to dragonlings. Their honor code forbids them from attacking weaker enemies and prevents them from declining a challenge from a worthy foe. They must demonstrate skills and determination in battle and never use dirty tricks. They must fight until death or incapacitation.
-worldbuilding,"Dragonlings often spar using ceremonial weapons like energy scythes which aren't the most efficient in real battles, but are difficult to master thus let them show off their skills."
+id,category,text
+1a8be52d-52c5-40bb-9bc5-3b8664581ad1,character,"Maya is half-alien and can transform into an alien form. The transformation is painful and looks frightening. However, staying in human form for a long time is painful for her."
+731b29dd-994f-45b0-b69e-8743e25a2ac9,character,Romy is Maya's sister and a disciplined lieutenant in the Fleet who has been raised since childhood to be a marine.
+606803eb-23cd-4ee1-8905-710f6d455d01,character,Hope is a stoic alien of the dragonling species. She is teaching Maya combat skills because she wants to draft Maya to the war against Eztli.
+6be780e4-a178-45a3-b669-f9f3eb3e3b6a,character,Drake is a space marine from a rich and exclusive orbital city who is investigating alien presence on the Earth.
+e6fe82b1-5143-42d2-81d2-7b7272e91bdd,plot,"Maya started fake dating Drake to find out what he knows about aliens, but accidentally fell in love with him."
+f6410670-9067-45c2-a36c-c1191145101c,plot,Maya and Drake's relationship is complicated because Drake wants to hunt down the aliens.
+38e7cb83-3f55-4ed3-8599-354ead85227b,character,Romy and Hope are in love.
+64405697-76fc-4e05-9df7-4dba5b22b15d,character,Hope sometimes wants to eat Romy because of her alien instincts.
+30ba3e49-8f3a-4c5f-8abb-9c7d138dc624,character,Maya is extremely protective of Romy.
+c95b3de1-1618-4a17-bbee-3b8d89e2c629,worldbuilding,"The aliens call themselves dragonlings, but humans call them demons because of their horns and frightening psychic powers."
+0acec025-ef40-466f-b582-563ff0820245,worldbuilding,Dragonlings are bipedal digitigrade aliens with feathers and scales.
+a46fff29-92a2-45a2-bbd3-516ec7723d41,worldbuilding,Dragonlings have sharp teeth and claws and two pairs of horns.
+c50ad64b-8318-46dc-875d-9cb4b3da83db,worldbuilding,Dragonlings have slit pupils and black sclerae.
+e9614c07-d2d5-486c-a49d-8ce9d1572385,worldbuilding,"Male dragonlings have shades of yellow or red, and female dragonlings have greyscale hues."
+edbae60a-f790-4730-a1ad-8853e3638013,worldbuilding,Dragonlings can regenerate even serious injuries.
+cca94def-d5cd-44cf-8b5b-a2610d131d81,worldbuilding,"Dragonlings have strong bloodlust and prey drive, but their cultural honor code keeps them in check."
+b980428c-90ef-4ad5-af44-90d3aefeb445,worldbuilding,Dragonlings have psychic powers that cause fear in their enemies and prey.
+8cbb48dd-0e43-4cd7-9aac-c1b2b764c6d4,worldbuilding,Dragonlings possess advanced technology given to them by an ancient race of aliens.
+9c21cd38-faab-470c-9259-814b6dd4b9f5,worldbuilding,Dragonlings live in primitive villages despite having advanced technology.
+f513448e-b484-4418-8d43-3efd2ecdf8aa,worldbuilding,"Humanity's rich elite lives in a solarpunk city, Sundial, on a beautiful island."
+97998e12-3a07-469d-9795-4a47b070dc7e,worldbuilding,Climate collapse resulted in nearly constant storms on the Earth.
+01eb6935-4c7f-425f-91f4-a74a1a0c2829,plot,Maya unknowingly became half-alien because of her mother's secret genetic experiments.
+6da969c8-7ac6-4b05-a4e2-8872b14fd3b5,worldbuilding,"Maya grew up on military ships, getting frequently transferred from ship to ship because she broke rules and couldn't fit in."
+7010fea5-0dbd-4e1a-a4e9-696069b63877,character,Eztli is a misantrophic mad scientist who wants to destroy the Earth because humans didn't appreciate her genius.
+bdb21e9a-bf54-4b87-98d0-c568355920b7,plot,Eztli has manipulated many aliens to join her plan to attack the Earth.
+ffe8d1a0-5a1f-4100-a8b0-f671cb3e7cd4,character,Hope considers the aliens who follow Eztli heretics.
+7987ec6b-09f7-493b-9c7f-dcae4eaf3511,plot,"Maya, Hope, and the alien village fight against Eztli."
+077fb342-fa61-483b-922e-67ca6fecbc4c,character,Vortexa is a former follower of Eztli.
+88b13e4f-c187-45f9-afde-f97ae0abac8f,character,"Vortexa was born from an incompatible pairing, orchestrated by Eztli who wanted to grow her army."
+9905c19c-4a38-474d-a135-7125fbf1d07b,character,Vortexa suffers from factitious disorder and pretends he can't regenerate.
+55b6e4f0-a28c-492c-a511-ac95c9ac3228,character,Aiko is a military AI created by an ancient race of aliens.
+15ce3a11-874d-49ef-b6dc-2746f5bff456,character,Aiko can control drones and nanobots.
+5345b076-941a-4292-96ea-ca50f4674447,character,Aiko and Maya have a neural link because some of Aiko's nanobots got into Maya's brain.
+6b3471d4-6273-4855-99a2-d1a60d9b43d8,worldbuilding,"Aiko consists of three separate AIs that collaborate: a language model, a military strategy core, and a weapons system."
+d83e30f0-d449-4f64-8d9f-fc175781b8dc,character,Aiko considers itself non-sentient.
+a0c0f092-829d-44de-9afb-a3562e69627e,plot,Aiko wants to help Vortexa get better.
+4c774ce3-f802-4e37-9a81-b218e7784e34,character,"Vortexa is sarcastic, irreverent, and risk-taking."
+06e1f133-2d66-442c-b9ba-747d90c69d63,character,Hope respects dragonling traditions and the honor code but feels like she doesn't fit in.
+c122896f-ece7-477d-8baa-afcb937350c0,character,Hope speaks only when she has something important to say.
+4389b3ef-dfe2-4327-81a5-70612443977b,character,Aiko has a great understanding of organic lifeforms' emotions and can act very warm and caring towards Maya.
+704fb4f9-101d-47fb-9483-b6b248518f5e,character,Maya is anxious and reserved but has mood swings and anger issues because she's a berserker.
+990f2a73-fc97-4968-8011-812259dab395,character,Romy feels pressured to be a high-achieving and perfect marine.
+6c121dec-7485-4171-bdd7-b4cd6c8ee1cb,character,Hope has white feathers.
+35375b04-3c6e-478a-a2e5-60e75dc83a33,character,Vortexa has golden yellow feathers.
+2cf8c590-dbf0-4d06-b142-9e3653433f20,character,Vortexa is an alien of the dragonling species.
+0de2d509-8ed4-4137-a269-facc2bacde42,worldbuilding,Dragonlings are obligate carnivores.
+a52913aa-4b0b-4277-9bbd-d641f0ee38b8,worldbuilding,"AIs have been built by humans and the alien race Ardalites. Maya considers human-made AIs less advanced and non-sentient, while believing Ardalite-made AIs are sentient."
+27a68ad2-f594-4710-8b4c-cc246277a124,worldbuilding,"Ardalites are an ancient alien race that lived on the same planet with dragonlings. They developed technology that is so advanced, it's indistinguishable from magic. They disappeared without a trace hundreds of years ago. Dragonlings use the technology they left behind but don't understand it."
+6eb9472a-ce7d-4c19-98cb-982c79a22e44,worldbuilding,Honor and being a good warrior are very important to dragonlings. Their honor code forbids them from attacking weaker enemies and prevents them from declining a challenge from a worthy foe. They must demonstrate skills and determination in battle and never use dirty tricks. They must fight until death or incapacitation.
+43d107e7-bbb3-41c8-9740-66e471054953,worldbuilding,"Dragonlings often spar using ceremonial weapons like energy scythes which aren't the most efficient in real battles, but are difficult to master thus let them show off their skills."
+a56683a3-74eb-4d53-918c-2bd70ed1f7aa,worldbuilding,"Some dragonlings are healers who can heal nearly any injury with their touch, but the healing process is very painful to the patient because their flesh is reshaped."

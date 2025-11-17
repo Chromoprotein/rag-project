@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
 interface Fact {
+  id: string;
   text: string;
   category: string;
 }
@@ -9,11 +10,11 @@ function FactsTable() {
   const [facts, setFacts] = useState<Fact[]>([]);
   const [draftFacts, setDraftFacts] = useState<Fact[]>([]);
   const [newFact, setNewFact] = useState<Fact>({
+    id: "",
     text: "",
     category: "Character",
   });
 
-  const timers = useRef<{ [key: number]: NodeJS.Timeout }>({});
   const [saving, setSaving] = useState<{ [index: number]: boolean }>({});
 
   // Fetch from backend
@@ -34,60 +35,46 @@ function FactsTable() {
       body: JSON.stringify(newFact),
     });
 
-    setNewFact({ text: "", category: "Character" });
+    setNewFact({ id: "", text: "", category: "Character" });
     fetchFacts();
   };
 
-  // Edit with debounce
   const editFact = (index: number, field: "text" | "category", value: string) => {
-    // Update local draft immediately
     setDraftFacts((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [field]: value };
       return updated;
     });
-
-    // Debounce save
-    if (timers.current[index]) clearTimeout(timers.current[index]);
-
-    timers.current[index] = setTimeout(async () => {
-      setSaving((prev) => ({ ...prev, [index]: true }));
-
-      // Use a function to access the latest state
-      setDraftFacts((current) => {
-        const factToSave = current[index];
-
-        fetch(`http://localhost:5000/facts/${index}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(factToSave),
-        }).then(() => {
-          setSaving((prev) => ({ ...prev, [index]: false }));
-          fetchFacts();
-        });
-
-        return current; // no actual UI change
-      });
-    }, 500);
   };
 
-  // Delete fact
+  const saveFact = async (index: number) => {
+    setSaving((prev) => ({ ...prev, [index]: true }));
+
+    const factToSave = draftFacts[index];
+
+    await fetch(`http://localhost:5000/facts/${factToSave.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(factToSave),
+    });
+
+    setSaving((prev) => ({ ...prev, [index]: false }));
+    fetchFacts();
+  };
+
   const deleteFact = async (index: number) => {
-    await fetch(`http://localhost:5000/facts/${index}`, { method: "DELETE" });
+    const fact = draftFacts[index];
+
+    await fetch(`http://localhost:5000/facts/${fact.id}`, {
+      method: "DELETE",
+    });
+
     fetchFacts();
   };
 
-  useEffect(() => {
-    fetchFacts();
+  useEffect(() => { 
+    fetchFacts(); 
   }, []);
-
-  const sortedFacts = [...draftFacts].sort((a, b) => {
-    const c1 = a.category.toLowerCase();
-    const c2 = b.category.toLowerCase();
-    if (c1 < c2) return -1;
-    if (c1 > c2) return 1;
-    return a.text.localeCompare(b.text);
-  });
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
@@ -122,9 +109,9 @@ function FactsTable() {
 
       {/* Facts list */}
       <ul className="flex flex-col gap-4">
-        {sortedFacts.map((fact, i) => (
+        {draftFacts.map((fact, i) => (
           <li
-            key={i}
+            key={fact.id}
             className="border-b border-slate-200 pb-4 flex flex-col gap-2"
           >
             <textarea
@@ -147,6 +134,13 @@ function FactsTable() {
               {saving[i] && (
                 <span className="text-gray-500 text-sm ml-2">Saving…</span>
               )}
+
+              <button
+                onClick={() => saveFact(i)}
+                className="px-3 py-1 bg-green-500 text-white rounded-md"
+              >
+                Save
+              </button>
 
               <button
                 onClick={() => deleteFact(i)}

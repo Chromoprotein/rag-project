@@ -1,55 +1,89 @@
-import csv
-from sentence_transformers import SentenceTransformer
-from openai import OpenAI
 import os
+import json
 import numpy as np
 import faiss
+from sentence_transformers import SentenceTransformer
+from openai import OpenAI
 from fact_utils import load_facts
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(levelname)s: %(message)s',
+    datefmt='%H:%M:%S'
+)
 
 client = OpenAI()
-
-# Load embeddings model
 bi_encoder = SentenceTransformer("all-MiniLM-L6-v2")
 
-# Load facts dataset
-facts = load_facts()
-passages = [fact["text"] for fact in facts if fact["text"]]
+# Paths
+BASE = os.path.dirname(__file__)
+EMBED_PATH = os.path.join(BASE, "embeddings.npy")
+INDEX_PATH = os.path.join(BASE, "faiss_index.index")
 
-#Precompute or load embeddings
-embeddings_path = os.path.join(os.path.dirname(__file__), "embeddings.npy")
-if not os.path.exists(embeddings_path):
-    embeddings = bi_encoder.encode(
-        passages, batch_size=32, convert_to_tensor=False, show_progress_bar=True)
+passages = []
+embeddings = None
+index = None
 
-    np.save(embeddings_path, embeddings)
-else:
-    embeddings = np.load(embeddings_path)
+def build_embeddings_and_index():
+    # Rebuild embeddings and FAISS index from scratch.
+    global passages, embeddings, index
 
-# Convert to float32 for FAISS
-embeddings = embeddings.astype("float32")
+    logging.info("Loading facts and rebuilding embeddings/index…")
+    facts = load_facts()
+    passages = [f["text"] for f in facts if f["text"]]
 
-index_path = os.path.join(os.path.dirname(__file__), "faiss_index.index")
+    if not passages:
+        embeddings = np.zeros((0, bi_encoder.get_sentence_embedding_dimension()), dtype="float32")
+        index = faiss.IndexHNSWFlat(embeddings.shape[1], 32)  # empty HNSW index
+        return
 
-if not os.path.exists(index_path):
+    # Compute embeddings
+    embeddings = bi_encoder.encode(passages, batch_size=32, convert_to_tensor=False)
+    embeddings = embeddings.astype("float32")
+    np.save(EMBED_PATH, embeddings)
+
+    # Build HNSW index
     dim = embeddings.shape[1]
-    index = faiss.IndexFlatL2(dim)
+    index = faiss.IndexHNSWFlat(dim, 32)  # 32 neighbors in HNSW graph
+    index.hnsw.efConstruction = 200
     index.add(embeddings)
+    faiss.write_index(index, INDEX_PATH)
 
-    faiss.write_index(index, index_path)
-else:
-    index = faiss.read_index(index_path)
+    logging.info(f"Built index with {len(passages)} passages.")
+
+def ensure_embeddings_up_to_date():
+    # Check if CSV changed; rebuild embeddings/index if needed.
+    global passages
+
+    facts = load_facts()
+    current_texts = [f["text"] for f in facts if f["text"]]
+
+    if passages != current_texts or embeddings is None or index is None:
+        build_embeddings_and_index()
+    else:
+        logging.info("No changes in facts. Using cached embeddings/index.")
 
 def retrieve(query, top_k=5):
+
+    if len(passages) == 0:
+        return []
+
     query_vec = bi_encoder.encode(
         query,
         convert_to_tensor=False
     ).astype("float32").reshape(1, -1)
 
     distances, indices = index.search(query_vec, top_k)
-
-    return [passages[i] for i in indices[0]]
+    results = []
+    for i in indices[0]:
+        if i < len(passages):
+            results.append(passages[i])
+    return results
 
 def generate_queries_and_context_stream(user_prompt: str):
+
+    ensure_embeddings_up_to_date()
 
     # --- 1. Generate related queries using GPT ---
     query_prompt = f"""
