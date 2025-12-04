@@ -10,16 +10,18 @@ import uuid
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"])
 
-@app.route("/generate", methods=["GET"])
+@app.route("/generate", methods=["POST"])
 def generate():
-    user_prompt = request.args.get("prompt", "")
+    data = request.get_json()
+    messages = data.get("messages", [])
+    latest_user_message = messages[-1]["content"] if messages else ""
 
     def event_stream():
 
         full_context = ""  # accumulate context for generation
 
         # --- STREAM QUERIES & CONTEXT ---
-        for event_type, payload in generate_queries_and_context_stream(user_prompt):
+        for event_type, payload in generate_queries_and_context_stream(latest_user_message):
             if event_type == "queries":
                 yield f"event: queries\ndata: {json.dumps(payload)}\n\n"
             elif event_type == "context":
@@ -28,7 +30,7 @@ def generate():
 
         # --- STREAM GENERATED TEXT ---
         buffer = ""
-        for chunk in stream_generated_text(user_prompt, full_context):
+        for chunk in stream_generated_text(messages, full_context):
             buffer += chunk
             
             # Send buffer when we hit newlines or buffer gets large enough

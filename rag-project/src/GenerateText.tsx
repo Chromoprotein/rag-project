@@ -1,58 +1,107 @@
 import { useState, useRef } from "react";
 import './output.css';
 import ReactMarkdown from "react-markdown";
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
 
 function GenerateText() {
   const [prompt, setPrompt] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [queries, setQueries] = useState<string[]>([]);
   const [context, setContext] = useState("");
   const [loading, setLoading] = useState(false);
   const [streamingText, setStreamingText] = useState("");
-  const [finalText, setFinalText] = useState("");
   const textRef = useRef("");
+  const [collapseQueries, setCollapseQueries] = useState(true);
+  const [collapseContext, setCollapseContext] = useState(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Add the user's new prompt to chat history
+    const userMessage: ChatMessage = { role: "user", content: prompt };
+    setMessages(prev => [...prev, userMessage]);
+
     setStreamingText("");
-    setFinalText("");
     setQueries([]);
     setContext("");
+    setPrompt("");
     setLoading(true);
     textRef.current = "";
 
-    // Start SSE stream
-    const evtSource = new EventSource(
-      `http://localhost:5000/generate?prompt=${encodeURIComponent(prompt)}`
-    );
+    try {
+      await fetchEventSource("http://localhost:5000/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage]   // send full chat
+        }),
 
-    evtSource.addEventListener("queries", e => {
-      setQueries(JSON.parse(e.data));
-    });
+        // Incoming SSE event handler
+        onmessage: (event) => {
+          if (event.event === "queries") {
+            setQueries(JSON.parse(event.data));
+          }
 
-    evtSource.addEventListener("context", e => {
-      const passage = JSON.parse(e.data);
-      setContext(prev => prev ? prev + "\n\n" + passage : passage);
-    });
+          if (event.event === "context") {
+            const passage = JSON.parse(event.data);
+            setContext(prev =>
+              prev ? prev + "\n\n" + passage : passage
+            );
+          }
 
-    evtSource.addEventListener("text", e => {
-      const chunk = JSON.parse(e.data);
-      textRef.current += chunk;
-      setStreamingText(textRef.current);
-    });
+          if (event.event === "text") {
+            const chunk = JSON.parse(event.data);
+            textRef.current += chunk;
+            setStreamingText(textRef.current);
+          }
 
-    // Stream end
-    evtSource.addEventListener("end", () => {
-      evtSource.close();
-      setFinalText(textRef.current);
+          if (event.event === "end") {
+            setLoading(false);
+
+            // store assistant reply in chat history
+            setMessages(prev => [
+              ...prev,
+              { role: "assistant", content: textRef.current }
+            ]);
+          }
+        },
+
+        onerror: (err) => {
+          console.error("SSE error:", err);
+          setLoading(false);
+        },
+      });
+    } catch (err) {
+      console.error("fetchEventSource threw:", err);
       setLoading(false);
-    });
+    }
 
-    // Cleanup if user navigates away
-    return () => evtSource.close();
   };
 
   return (
     <div className="p-6 max-w-md mx-auto">
+
+      {messages.map((msg, idx) => (
+        <div key={idx} className={msg.role === "user" ? "text-right" : "text-left"}>
+          <strong>{msg.role === "user" ? "You:" : "Assistant:"}</strong>
+          <ReactMarkdown>{msg.content}</ReactMarkdown>
+        </div>
+      ))}
+
+      {loading && streamingText && (
+        <div className="text-left">
+          <strong>Assistant:</strong>
+          <ReactMarkdown>{streamingText}</ReactMarkdown>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <textarea
           value={prompt}
@@ -69,26 +118,33 @@ function GenerateText() {
         </button>
       </form>
 
-      {queries.length > 0 && (
-        <div className="mt-4">
-          <h3>Generated Queries:</h3>
-          <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
-        </div>
-      )}
+      {queries.length > 0 && 
+        <>
+          <button onClick={() => setCollapseQueries(prev => !prev)}>{collapseQueries ? "Show queries" : "Hide queries"}</button>
+          {!collapseQueries &&
+            <>
+              <div className="mt-4">
+                <h3>Generated Queries:</h3>
+                <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
+              </div>
+            </>
+          }
+        </>
+      }
 
-      {context && (
-        <div className="mt-4">
-          <h3>Retrieved Context:</h3>
-          <ReactMarkdown>{context}</ReactMarkdown>
-        </div>
-      )}
-
-      {(streamingText || finalText) && (
-        <div className="mt-6">
-          <h3>Generated Writing:</h3>
-            <ReactMarkdown>{loading ? streamingText : finalText}</ReactMarkdown>
-        </div>
-      )}
+      {context && 
+        <>
+          <button onClick={() => setCollapseContext(prev => !prev)}>{collapseContext ? "Show context" : "Hide context"}</button>
+          {!collapseContext &&
+            <>
+              <div className="mt-4">
+                <h3>Retrieved Context:</h3>
+                <ReactMarkdown>{context}</ReactMarkdown>
+              </div>
+            </>
+          }
+        </>
+      }
 
     </div>
   );

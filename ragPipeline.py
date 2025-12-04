@@ -81,7 +81,7 @@ def retrieve(query, top_k=5):
             results.append(passages[i])
     return results
 
-def generate_queries_and_context_stream(user_prompt: str):
+def generate_queries_and_context_stream(latest_user_message: str):
 
     ensure_embeddings_up_to_date()
 
@@ -90,7 +90,7 @@ def generate_queries_and_context_stream(user_prompt: str):
     The user is writing a sci-fi novel. Based on their writing prompt, write up to 3 short factual search queries that would help find relevant background information about the story's characters, universe, or plot.
     Keep them concise and simple.
 
-    Writing prompt: "{user_prompt}"
+    Writing prompt: "{latest_user_message}"
     """
     query_response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -103,7 +103,7 @@ def generate_queries_and_context_stream(user_prompt: str):
     query_text = query_response.choices[0].message.content.strip()
     queries = [q.strip("- ").strip() for q in query_text.split("\n") if q.strip()]
     if not queries:
-        queries = [user_prompt]
+        queries = [latest_user_message]
 
     # stream the queries
     yield ("queries", queries)
@@ -122,23 +122,30 @@ def generate_queries_and_context_stream(user_prompt: str):
             if count >= 20:
                 return
 
-def stream_generated_text(user_prompt, context):
+def stream_generated_text(chat_history, context):
 
-    writing_prompt = f"""
+    # build a new latest message for the AI
+    latest_user = chat_history[-1]["content"]
+
+    new_user_message = f"""
     You may use the context below to stay consistent with story facts.
     Context:
     {context}
 
     User prompt:
-    {user_prompt}
+    {latest_user}
     """
+
+    # full chat history
+    messages_with_context = (
+        [{"role": "system", "content": "You are a writing assistant for a sci-fi novel. Format in markdown."}]
+        + chat_history[:-1]   # all old messages
+        + [{"role": "user", "content": new_user_message}]
+    )
 
     response_stream = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "You are a writing assistant for a sci-fi novel. Format your writing using markdown."},
-            {"role": "user", "content": writing_prompt}
-        ],
+        messages=messages_with_context,
         stream=True
     )
 
