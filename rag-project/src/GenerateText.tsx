@@ -86,65 +86,69 @@ function GenerateText() {
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
+    <div className="p-6 max-w-lg mx-auto flex flex-col min-h-screen">
 
-      {messages.map((msg, idx) => (
-        <div key={idx} className={msg.role === "user" ? "text-right" : "text-left"}>
-          <strong>{msg.role === "user" ? "You:" : "Assistant:"}</strong>
-          <ReactMarkdown>{msg.content}</ReactMarkdown>
-        </div>
-      ))}
+      <div className="flex-grow p-4">
+        {messages.map((msg, idx) => (
+          <div key={idx} className={msg.role === "user" ? "text-right" : "text-left"}>
+            <strong>{msg.role === "user" ? "You:" : "Assistant:"}</strong>
+            <ReactMarkdown>{msg.content}</ReactMarkdown>
+          </div>
+        ))}
 
-      {loading && streamingText && (
-        <div className="text-left">
-          <strong>Assistant:</strong>
-          <ReactMarkdown>{streamingText}</ReactMarkdown>
-        </div>
-      )}
+        {loading && streamingText && (
+          <div className="text-left">
+            <strong>Assistant:</strong>
+            <ReactMarkdown>{streamingText}</ReactMarkdown>
+          </div>
+        )}
+      </div>
+      
+      <div className="sticky mt-top bg-gray-200 p-4 bottom-0 max-h-[50vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Enter your prompt..."
+            className="w-full p-2 border rounded-lg"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            {loading ? "Generating..." : "Send"}
+          </button>
+        </form>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Enter your prompt..."
-          className="w-full p-2 border rounded-lg"
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-        >
-          {loading ? "Generating..." : "Generate"}
-        </button>
-      </form>
+        {queries.length > 0 && 
+          <>
+            {!collapseQueries &&
+              <>
+                <div className="mt-4">
+                  <h3>Generated Queries:</h3>
+                  <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
+                </div>
+              </>
+            }
+            <button onClick={() => setCollapseQueries(prev => !prev)}>{collapseQueries ? "Show queries" : "Hide queries"}</button>
+          </>
+        }
 
-      {queries.length > 0 && 
-        <>
-          <button onClick={() => setCollapseQueries(prev => !prev)}>{collapseQueries ? "Show queries" : "Hide queries"}</button>
-          {!collapseQueries &&
-            <>
-              <div className="mt-4">
-                <h3>Generated Queries:</h3>
-                <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
-              </div>
-            </>
-          }
-        </>
-      }
-
-      {context && 
-        <>
-          <button onClick={() => setCollapseContext(prev => !prev)}>{collapseContext ? "Show context" : "Hide context"}</button>
-          {!collapseContext &&
-            <>
-              <div className="mt-4">
-                <h3>Retrieved Context:</h3>
-                <ReactMarkdown>{context}</ReactMarkdown>
-              </div>
-            </>
-          }
-        </>
-      }
+        {context && 
+          <>
+            {!collapseContext &&
+              <>
+                <div className="mt-4">
+                  <h3>Retrieved Context:</h3>
+                  <ReactMarkdown>{context}</ReactMarkdown>
+                </div>
+              </>
+            }
+            <button onClick={() => setCollapseContext(prev => !prev)}>{collapseContext ? "Show context" : "Hide context"}</button>
+          </>
+        }
+      </div>
 
     </div>
   );
