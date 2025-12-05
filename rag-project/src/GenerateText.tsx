@@ -9,13 +9,14 @@ type ChatMessage = {
 };
 
 function GenerateText() {
-  const [prompt, setPrompt] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [queries, setQueries] = useState<string[]>([]);
-  const [context, setContext] = useState("");
+  const [prompt, setPrompt] = useState(""); // New prompt
+  const [messages, setMessages] = useState<ChatMessage[]>([]); // Chat history
+  const [queries, setQueries] = useState<string[]>([]); // Queries for facts database
+  const [context, setContext] = useState(""); // Context retrieved from database
   const [loading, setLoading] = useState(false);
   const [streamingText, setStreamingText] = useState("");
   const textRef = useRef("");
+  const streamingContextRef = useRef("");
   const [collapseQueries, setCollapseQueries] = useState(true);
   const [collapseContext, setCollapseContext] = useState(true);
 
@@ -28,19 +29,22 @@ function GenerateText() {
 
     setStreamingText("");
     setQueries([]);
-    setContext("");
     setPrompt("");
     setLoading(true);
     textRef.current = "";
+    streamingContextRef.current = "";
+    const oldContextSnapshot = context; // fallback context
 
     try {
+
       await fetchEventSource("http://localhost:5000/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage]   // send full chat
+          messages: [...messages, userMessage],   // send full chat
+          old_context: oldContextSnapshot
         }),
 
         // Incoming SSE event handler
@@ -51,9 +55,11 @@ function GenerateText() {
 
           if (event.event === "context") {
             const passage = JSON.parse(event.data);
-            setContext(prev =>
-              prev ? prev + "\n\n" + passage : passage
-            );
+            streamingContextRef.current += passage + "\n\n";
+            // commit new context only if any was retrieved
+            if (streamingContextRef.current.trim().length > 0) {
+              setContext(streamingContextRef.current);
+            }
           }
 
           if (event.event === "text") {

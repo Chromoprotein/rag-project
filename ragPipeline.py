@@ -7,12 +7,6 @@ from openai import OpenAI
 from fact_utils import load_facts
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s: %(message)s',
-    datefmt='%H:%M:%S'
-)
-
 client = OpenAI()
 bi_encoder = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -81,7 +75,7 @@ def retrieve(query, top_k=5):
             results.append(passages[i])
     return results
 
-def generate_queries_and_context_stream(latest_user_message: str):
+def generate_queries_and_context_stream(latest_user_message, old_context):
 
     ensure_embeddings_up_to_date()
 
@@ -91,19 +85,29 @@ def generate_queries_and_context_stream(latest_user_message: str):
     Keep them concise and simple.
 
     Writing prompt: "{latest_user_message}"
+
+    There might already be some existing context. If it already contains factual information about all the characters, places, and events mentioned in the writing prompt, you can skip generating search queries and output exactly NO_CONTEXT_NEEDED. However, if the writing prompt introduces new characters or other things that might have lore behind them, you must generate search queries. Existing context: "{old_context}"
     """
+
+    messages_with_context = (
+        [{"role": "system", "content": "The user is writing a sci-fi novel. You have access to a data set containing facts about the novel, including facts about the characters, the setting, and the plot. You write up to 3 short, factual search queries for retrieving useful background information from the database related to the user's writing prompt."}]
+        + [{"role": "user", "content": query_prompt}]
+    )
+
     query_response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "You have access to a data set containing facts about a sci-fi novel, including facts about the characters, the setting, and the plot. You write search queries that help find useful context and details from the database to fill in information missing from the user's writing prompt. The search queries can, for example, ask who a character is, what the characters' relationship is like, or what a place or an item is like."},
-            {"role": "user", "content": query_prompt}
-        ]
+        messages=messages_with_context
     )
 
     query_text = query_response.choices[0].message.content.strip()
+
+    # Skip if no new context needed
+    if "NO_CONTEXT_NEEDED" in query_text:
+        return
+
     queries = [q.strip("- ").strip() for q in query_text.split("\n") if q.strip()]
     if not queries:
-        queries = [latest_user_message]
+        return
 
     # stream the queries
     yield ("queries", queries)

@@ -15,18 +15,23 @@ def generate():
     data = request.get_json()
     messages = data.get("messages", [])
     latest_user_message = messages[-1]["content"] if messages else ""
+    old_context = data.get("old_context", "")
 
     def event_stream():
 
         full_context = ""  # accumulate context for generation
 
         # --- STREAM QUERIES & CONTEXT ---
-        for event_type, payload in generate_queries_and_context_stream(latest_user_message):
+        for event_type, payload in generate_queries_and_context_stream(latest_user_message, old_context):
             if event_type == "queries":
                 yield f"event: queries\ndata: {json.dumps(payload)}\n\n"
             elif event_type == "context":
                 full_context += payload + "\n\n"
                 yield f"event: context\ndata: {json.dumps(payload)}\n\n"
+
+        # --- If no new context was retrieved, fall back to old_context ---
+        if not full_context.strip():
+            full_context = old_context
 
         # --- STREAM GENERATED TEXT ---
         buffer = ""
