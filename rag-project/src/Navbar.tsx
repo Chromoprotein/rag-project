@@ -5,6 +5,7 @@ function Navbar() {
     <nav className="p-4 bg-gray-200 flex gap-4">
       <Link to="/">Generate Text</Link>
       <Link to="/facts">Edit Database</Link>
+      <Link to="/style">Writing style</Link>
     </nav>
   );
 }

@@ -11,14 +11,19 @@ type ChatMessage = {
 function GenerateText() {
   const [prompt, setPrompt] = useState(""); // New prompt
   const [messages, setMessages] = useState<ChatMessage[]>([]); // Chat history
+
+  const [collapseQueries, setCollapseQueries] = useState(false);
+  const [collapseContext, setCollapseContext] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [queries, setQueries] = useState<string[]>([]); // Queries for facts database
   const [context, setContext] = useState(""); // Context retrieved from database
-  const [loading, setLoading] = useState(false);
+
   const [streamingText, setStreamingText] = useState("");
   const textRef = useRef("");
-  const streamingContextRef = useRef("");
-  const [collapseQueries, setCollapseQueries] = useState(true);
-  const [collapseContext, setCollapseContext] = useState(true);
+
+  const [streamingContext, setStreamingContext] = useState("");
+  const contextRef = useRef("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,11 +33,12 @@ function GenerateText() {
     setMessages(prev => [...prev, userMessage]);
 
     setStreamingText("");
-    setQueries([]);
+    textRef.current = "";
+
     setPrompt("");
     setLoading(true);
-    textRef.current = "";
-    streamingContextRef.current = "";
+    
+    contextRef.current = "";
     const oldContextSnapshot = context; // fallback context
 
     try {
@@ -50,16 +56,16 @@ function GenerateText() {
         // Incoming SSE event handler
         onmessage: (event) => {
           if (event.event === "queries") {
-            setQueries(JSON.parse(event.data));
+            const qs = JSON.parse(event.data);
+            if (Array.isArray(qs) && qs.length > 0) {
+              setQueries(qs);
+            }
           }
 
           if (event.event === "context") {
             const passage = JSON.parse(event.data);
-            streamingContextRef.current += passage + "\n\n";
-            // commit new context only if any was retrieved
-            if (streamingContextRef.current.trim().length > 0) {
-              setContext(streamingContextRef.current);
-            }
+            contextRef.current += passage + "\n\n";
+            setStreamingContext(contextRef.current);
           }
 
           if (event.event === "text") {
@@ -70,6 +76,11 @@ function GenerateText() {
 
           if (event.event === "end") {
             setLoading(false);
+
+            // commit new context only if any was retrieved
+            if (contextRef.current.trim().length > 0) {
+              setContext(contextRef.current);
+            }
 
             // store assistant reply in chat history
             setMessages(prev => [
@@ -121,39 +132,33 @@ function GenerateText() {
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+            className="m-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
           >
             {loading ? "Generating..." : "Send"}
           </button>
+          
+          <button type="button" className="m-2 px-4 py-2 bg-blue-600 text-white rounded-lg" onClick={() => setCollapseContext(prev => !prev)}>
+            {collapseContext ? "Show context" : "Hide context"}
+          </button>
+          <button type="button" className="m-2 px-4 py-2 bg-blue-600 text-white rounded-lg" onClick={() => setCollapseQueries(prev => !prev)}>
+            {collapseQueries ? "Show queries" : "Hide queries"}
+          </button>
         </form>
 
-        {queries.length > 0 && 
-          <>
-            {!collapseQueries &&
-              <>
-                <div className="mt-4">
-                  <h3>Generated Queries:</h3>
-                  <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
-                </div>
-              </>
-            }
-            <button onClick={() => setCollapseQueries(prev => !prev)}>{collapseQueries ? "Show queries" : "Hide queries"}</button>
-          </>
+        {!collapseQueries &&
+          <div className="mt-4">
+            <h3>Generated Queries:</h3>
+            <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
+          </div>
         }
 
-        {context && 
-          <>
-            {!collapseContext &&
-              <>
-                <div className="mt-4">
-                  <h3>Retrieved Context:</h3>
-                  <ReactMarkdown>{context}</ReactMarkdown>
-                </div>
-              </>
-            }
-            <button onClick={() => setCollapseContext(prev => !prev)}>{collapseContext ? "Show context" : "Hide context"}</button>
-          </>
+        {!collapseContext &&
+          <div className="mt-4">
+            <h3>Retrieved Context:</h3>
+            <ReactMarkdown>{(loading && streamingContext) ? streamingContext : context}</ReactMarkdown>
+          </div>
         }
+
       </div>
 
     </div>
