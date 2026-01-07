@@ -116,6 +116,48 @@ def delete_fact(fact_id):
 
     return jsonify({"status": "ok"})
 
+# --- Writing style endpoints ---
+
+STYLE_FILE = "writing_style.json"
+
+# Helper function to read the file
+def read_style():
+    if not os.path.exists(STYLE_FILE):
+        # Return default if file doesn't exist
+        return {
+            "pov": "First person",
+            "tense": "Past tense",
+            "style": ""
+        }
+    with open(STYLE_FILE, "r") as f:
+        return json.load(f)
+
+# Helper function to write to the file
+def write_style(style_data):
+    with open(STYLE_FILE, "w") as f:
+        json.dump(style_data, f, indent=4)
+
+# Route to GET the current writing style
+@app.route("/getStyle", methods=["GET"])
+def get_style():
+    style = read_style()
+    return jsonify(style)
+
+# Route to POST and save the writing style
+@app.route("/postStyle", methods=["POST"])
+def post_style():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    # Optional: validate keys
+    expected_keys = {"pov", "tense", "style"}
+    if not expected_keys.issubset(data.keys()):
+        return jsonify({"error": "Missing keys in data"}), 400
+
+    write_style(data)
+    return jsonify({"message": "Style saved successfully!"})
+
 # --- Serve React frontend (catch-all) ---
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
