@@ -1,19 +1,16 @@
 import { useState, useRef } from "react";
 import './output.css';
-import ReactMarkdown from "react-markdown";
+import MessageBubble from "./MessageBubble.tsx";
 import { fetchEventSource } from '@microsoft/fetch-event-source';
-
-type ChatMessage = {
-  role: "user" | "assistant";
-  content: string;
-};
+import { ChatMessage } from "./Types.tsx";
+import ReactMarkdown from "react-markdown";
 
 function GenerateText() {
   const [prompt, setPrompt] = useState(""); // New prompt
   const [messages, setMessages] = useState<ChatMessage[]>([]); // Chat history
 
-  const [collapseQueries, setCollapseQueries] = useState(false);
-  const [collapseContext, setCollapseContext] = useState(false);
+  const [collapseQueries, setCollapseQueries] = useState(true);
+  const [collapseContext, setCollapseContext] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const [queries, setQueries] = useState<string[]>([]); // Queries for facts database
@@ -103,64 +100,73 @@ function GenerateText() {
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto flex flex-col min-h-screen">
+    <div className="bg-zinc-900">
+      <div className="max-w-3xl mx-auto flex flex-col min-h-screen">
 
-      <div className="flex-grow p-4">
-        {messages.map((msg, idx) => (
-          <div key={idx} className={msg.role === "user" ? "text-right" : "text-left"}>
-            <strong>{msg.role === "user" ? "You:" : "Assistant:"}</strong>
-            <ReactMarkdown>{msg.content}</ReactMarkdown>
-          </div>
-        ))}
+        <div className="flex-grow p-4 text-zinc-200 flex flex-col gap-3">
 
-        {loading && streamingText && (
-          <div className="text-left">
-            <strong>Assistant:</strong>
-            <ReactMarkdown>{streamingText}</ReactMarkdown>
-          </div>
-        )}
+          {messages.map((msg: ChatMessage, idx: number) => (
+            <MessageBubble key={idx} msg={msg} />
+          ))}
+
+          {loading && streamingText && (
+            <MessageBubble key="streaming" msg={{role: "assistant", content: streamingText}} />
+          )}
+
+          {(loading && !streamingText) && <div>Loading...</div>}
+
+        </div>
+        
+        <div className="sticky mt-top rounded-xl bottom-0 max-h-[50vh] overflow-y-auto bg-zinc-700 inset-ring inset-ring-zinc-600">
+          <form onSubmit={handleSubmit} className="flex flex-col p-1 gap-1 flex flex-col">
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Enter your prompt..."
+              className="w-full min-h-24 p-4 resize-none rounded-lg bg-zinc-800 border-1 border-zinc-600 focus:outline-hidden placeholder:text-zinc-400 text-zinc-200"
+            />
+
+            <div className="bg-zinc-600 rounded-lg border-zinc-500 border-1 outline-2 outline-zinc-800 flex flex-row">
+              <button type="button" className="m-2 px-4 py-2 rounded-xl bg-zinc-800 text-zinc-400" onClick={() => setCollapseContext(prev => !prev)}>
+                {collapseContext ? "Show context" : "Hide context"}
+              </button>
+              <button type="button" className="m-2 px-4 py-2 rounded-xl bg-zinc-800 text-zinc-400" onClick={() => setCollapseQueries(prev => !prev)}>
+                {collapseQueries ? "Show queries" : "Hide queries"}
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="m-2 px-4 py-2 bg-blue-600 text-zinc-200 rounded-xl ml-auto"
+              >
+                {loading ? "Generating..." : "Send"}
+              </button>
+            </div>
+
+            {(!collapseQueries || !collapseContext) &&
+              <div className="p-4 rounded-lg bg-zinc-800 border-1 border-zinc-600 text-zinc-200">
+                {!collapseQueries &&
+                  <div>
+                    <h3>Generated Queries:</h3>
+                    <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
+                  </div>
+                }
+
+                {(!collapseQueries && !collapseContext) && <br />}
+
+                {!collapseContext &&
+                  <div>
+                    <h3>Retrieved Context:</h3>
+                    <ReactMarkdown>{(loading && streamingContext) ? streamingContext : context}</ReactMarkdown>
+                  </div>
+                }
+              </div> 
+            }
+
+          </form>
+
+        </div>
+
       </div>
-      
-      <div className="sticky mt-top bg-gray-200 p-4 bottom-0 max-h-[50vh] overflow-y-auto">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Enter your prompt..."
-            className="w-full p-2 border rounded-lg"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="m-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
-          >
-            {loading ? "Generating..." : "Send"}
-          </button>
-          
-          <button type="button" className="m-2 px-4 py-2 bg-blue-600 text-white rounded-lg" onClick={() => setCollapseContext(prev => !prev)}>
-            {collapseContext ? "Show context" : "Hide context"}
-          </button>
-          <button type="button" className="m-2 px-4 py-2 bg-blue-600 text-white rounded-lg" onClick={() => setCollapseQueries(prev => !prev)}>
-            {collapseQueries ? "Show queries" : "Hide queries"}
-          </button>
-        </form>
-
-        {!collapseQueries &&
-          <div className="mt-4">
-            <h3>Generated Queries:</h3>
-            <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
-          </div>
-        }
-
-        {!collapseContext &&
-          <div className="mt-4">
-            <h3>Retrieved Context:</h3>
-            <ReactMarkdown>{(loading && streamingContext) ? streamingContext : context}</ReactMarkdown>
-          </div>
-        }
-
-      </div>
-
     </div>
   );
 }
