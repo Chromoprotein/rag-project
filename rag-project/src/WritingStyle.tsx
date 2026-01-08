@@ -46,7 +46,7 @@ export default function WritingStyle() {
     }, []);
 
     return (
-        <div className="p-6 max-w-2xl mx-auto">
+        <div className="p-6 max-w-2xl mx-auto text-zinc-200">
             <h3 className="text-xl font-bold mb-3">Writing Style Settings</h3>
 
             <form onSubmit={handleSubmit} className="space-y-4">

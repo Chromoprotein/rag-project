@@ -4,6 +4,7 @@ import MessageBubble from "./MessageBubble.tsx";
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { ChatMessage } from "./Types.tsx";
 import ReactMarkdown from "react-markdown";
+import Ellipsis from "./Ellipsis.tsx";
 
 function GenerateText() {
   const [prompt, setPrompt] = useState(""); // New prompt
@@ -100,10 +101,19 @@ function GenerateText() {
   };
 
   return (
-    <div className="bg-zinc-900">
-      <div className="max-w-3xl mx-auto flex flex-col min-h-screen">
+      <div className="max-w-3xl mx-auto h-full relative w-full">
 
-        <div className="flex-grow p-4 text-zinc-200 flex flex-col gap-3">
+      {/* SCROLL CONTAINER */}
+      <div className="relative flex flex-col h-full">
+
+        {/* Messages */}
+        <div className="px-4 py-8 text-zinc-200 flex flex-col gap-3">
+
+          {messages.length === 0 && 
+            <div className="flex justify-center pt-4">
+              <h1 className="text-2xl">What are we writing today?</h1>
+            </div>
+          }
 
           {messages.map((msg: ChatMessage, idx: number) => (
             <MessageBubble key={idx} msg={msg} />
@@ -113,61 +123,65 @@ function GenerateText() {
             <MessageBubble key="streaming" msg={{role: "assistant", content: streamingText}} />
           )}
 
-          {(loading && !streamingText) && <div>Loading...</div>}
+          {(loading && !streamingText) && <Ellipsis />}
 
         </div>
         
-        <div className="sticky mt-top rounded-xl bottom-0 max-h-[50vh] overflow-y-auto bg-zinc-700 inset-ring inset-ring-zinc-600">
-          <form onSubmit={handleSubmit} className="flex flex-col p-1 gap-1 flex flex-col">
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Enter your prompt..."
-              className="w-full min-h-24 p-4 resize-none rounded-lg bg-zinc-800 border-1 border-zinc-600 focus:outline-hidden placeholder:text-zinc-400 text-zinc-200"
-            />
+        {/* Floating input */}
+        <div className="sticky bottom-4 z-10 px-4">
+          <div className="rounded-xl bg-zinc-700 inset-ring inset-ring-zinc-600 max-h-[50vh] overflow-y-auto">
+            <form onSubmit={handleSubmit} className="flex flex-col p-1 gap-1 flex flex-col">
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Enter your prompt..."
+                className="w-full min-h-24 p-4 resize-none rounded-lg bg-zinc-800 border-1 border-zinc-600 focus:outline-hidden placeholder:text-zinc-400 text-zinc-200"
+              />
 
-            <div className="bg-zinc-600 rounded-lg border-zinc-500 border-1 outline-2 outline-zinc-800 flex flex-row">
-              <button type="button" className="m-2 px-4 py-2 rounded-xl bg-zinc-800 text-zinc-400" onClick={() => setCollapseContext(prev => !prev)}>
-                {collapseContext ? "Show context" : "Hide context"}
-              </button>
-              <button type="button" className="m-2 px-4 py-2 rounded-xl bg-zinc-800 text-zinc-400" onClick={() => setCollapseQueries(prev => !prev)}>
-                {collapseQueries ? "Show queries" : "Hide queries"}
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="m-2 px-4 py-2 bg-blue-600 text-zinc-200 rounded-xl ml-auto"
-              >
-                {loading ? "Generating..." : "Send"}
-              </button>
-            </div>
+              <div className="bg-zinc-600 rounded-lg border-zinc-500 border-1 outline-2 outline-zinc-800 flex flex-row">
+                <button type="button" className="m-2 px-4 py-2 rounded-xl bg-zinc-800 text-zinc-400" onClick={() => setCollapseContext(prev => !prev)}>
+                  {collapseContext ? "Show context" : "Hide context"}
+                </button>
+                <button type="button" className="m-2 px-4 py-2 rounded-xl bg-zinc-800 text-zinc-400" onClick={() => setCollapseQueries(prev => !prev)}>
+                  {collapseQueries ? "Show queries" : "Hide queries"}
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="m-2 px-4 py-2 bg-blue-600 text-zinc-200 rounded-xl ml-auto"
+                >
+                  {loading ? "Generating..." : "Send"}
+                </button>
+              </div>
 
-            {(!collapseQueries || !collapseContext) &&
-              <div className="p-4 rounded-lg bg-zinc-800 border-1 border-zinc-600 text-zinc-200">
-                {!collapseQueries &&
-                  <div>
-                    <h3>Generated Queries:</h3>
-                    <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
-                  </div>
-                }
+              {(!collapseQueries || !collapseContext) &&
+                <div className="p-4 rounded-lg bg-zinc-800 border-1 border-zinc-600 text-zinc-200">
+                  {!collapseQueries &&
+                    <div>
+                      <h3>Generated Queries:</h3>
+                      <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
+                    </div>
+                  }
 
-                {(!collapseQueries && !collapseContext) && <br />}
+                  {(!collapseQueries && !collapseContext) && <br />}
 
-                {!collapseContext &&
-                  <div>
-                    <h3>Retrieved Context:</h3>
-                    <ReactMarkdown>{(loading && streamingContext) ? streamingContext : context}</ReactMarkdown>
-                  </div>
-                }
-              </div> 
-            }
+                  {!collapseContext &&
+                    <div>
+                      <h3>Retrieved Context:</h3>
+                      <ReactMarkdown>{(loading && streamingContext) ? streamingContext : context}</ReactMarkdown>
+                    </div>
+                  }
+                </div> 
+              }
 
-          </form>
+            </form>
 
+          </div>
         </div>
 
       </div>
-    </div>
+
+      </div>
   );
 }
 

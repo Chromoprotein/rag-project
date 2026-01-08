@@ -94,13 +94,13 @@ function FactsTable() {
   }, []);
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-6 max-w-2xl mx-auto text-zinc-200">
       <h3 className="text-xl font-bold mb-3">Facts</h3>
 
       {/* Add new fact */}
       <div className="flex flex-col gap-2 mb-6">
         <textarea
-          className="border border-slate-300 rounded-md p-2 text-sm w-full"
+          className="border border-slate-300 rounded-md p-2 text-sm w-full placeholder:text-zinc-400"
           value={newFact.text}
           onChange={(e) =>
             setNewFact((prev) => ({ ...prev, text: e.target.value }))
@@ -122,7 +122,7 @@ function FactsTable() {
 
         <button
           onClick={addFact}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg mt-1 cursor-pointer"
+          className="px-4 py-2 bg-blue-600 rounded-lg mt-1 cursor-pointer"
         >
           Add Fact
         </button>
@@ -132,7 +132,7 @@ function FactsTable() {
       <ul className="flex flex-col gap-8">
         {categoryOrder.map((category) => (
           <li key={category}>
-            <h4 className="text-lg font-semibold mb-3 capitalize text-slate-700">
+            <h4 className="text-lg font-semibold mb-3 capitalize">
               {category}
             </h4>
 
@@ -162,19 +162,19 @@ function FactsTable() {
                     </select>
 
                     {saving[fact.id] && (
-                      <span className="text-gray-500 text-sm ml-2">Saving…</span>
+                      <span className="text-sm ml-2">Saving…</span>
                     )}
 
                     <button
                       onClick={() => saveFact(fact.id)}
-                      className="px-3 py-1 bg-green-500 text-white rounded-md cursor-pointer"
+                      className="px-3 py-1 bg-blue-500 rounded-md cursor-pointer"
                     >
                       Save
                     </button>
 
                     <button
                       onClick={() => deleteFact(fact.id)}
-                      className="px-3 py-1 bg-red-500 text-white rounded-md ml-auto cursor-pointer"
+                      className="px-3 py-1 bg-red-500 rounded-md ml-auto cursor-pointer"
                     >
                       Delete
                     </button>

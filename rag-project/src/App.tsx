@@ -10,14 +10,18 @@ import WritingStyle from "./WritingStyle.tsx";
 function App() {
 
     return (
-        <>
+        <div className="min-h-screen flex flex-col bg-zinc-900">
             <Navbar />
-            <Routes>
-                <Route path="/" element={<GenerateText/>} />
-                <Route path="facts" element={<FactsTable/>} />
-                <Route path="style" element={<WritingStyle/>} />
-            </Routes>
-        </>
+
+            <main className="flex-1 h-full w-full flex flex-col justify-center">
+                <Routes>
+                    <Route path="/" element={<GenerateText/>} />
+                    <Route path="facts" element={<FactsTable/>} />
+                    <Route path="style" element={<WritingStyle/>} />
+                </Routes>
+            </main>
+
+        </div>
     );
 
 }
