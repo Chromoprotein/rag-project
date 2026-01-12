@@ -1,10 +1,19 @@
 import { useState, useRef } from "react";
-import './output.css';
-import MessageBubble from "./MessageBubble.tsx";
+import '../styles/output.css';
+import MessageBubble from "../assets/MessageBubble.tsx";
 import { fetchEventSource } from '@microsoft/fetch-event-source';
-import { ChatMessage } from "./Types.tsx";
+import { ChatMessage } from "../utils/Types.tsx";
 import ReactMarkdown from "react-markdown";
-import Ellipsis from "./Ellipsis.tsx";
+import Ellipsis from "../assets/Ellipsis.tsx";
+import Button from "../assets/Button.tsx";
+import SubmitButton from "../assets/SubmitButton.tsx";
+import Textarea from "../assets/Textarea.tsx";
+import LightBox from "../assets/LightBox.tsx";
+import DarkBox from "../assets/DarkBox.tsx";
+import LightOuterBox from "../assets/LightOuterBox.tsx";
+import FormWrapper from "../assets/FormWrapper.tsx";
+import Title1 from "../assets/Title1.tsx";
+import Title2 from "../assets/Title2.tsx";
 
 function GenerateText() {
   const [prompt, setPrompt] = useState(""); // New prompt
@@ -101,7 +110,7 @@ function GenerateText() {
   };
 
   return (
-      <div className="max-w-3xl mx-auto h-full relative w-full">
+      <div className="max-w-3xl mx-auto h-full relative w-full relative">
 
       {/* SCROLL CONTAINER */}
       <div className="relative flex flex-col h-full">
@@ -111,7 +120,7 @@ function GenerateText() {
 
           {messages.length === 0 && 
             <div className="flex justify-center pt-4">
-              <h1 className="text-2xl">What are we writing today?</h1>
+              <Title1>What are we writing today?</Title1>
             </div>
           }
 
@@ -122,61 +131,49 @@ function GenerateText() {
           {loading && streamingText && (
             <MessageBubble key="streaming" msg={{role: "assistant", content: streamingText}} />
           )}
+        
+          {(!collapseQueries || !collapseContext) &&
+            <DarkBox>
+              {!collapseQueries &&
+                <div>
+                  <Title2>Generated Queries</Title2>
+                  <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
+                </div>
+              }
+
+              {(!collapseQueries && !collapseContext) && <br />}
+
+              {!collapseContext &&
+                <div>
+                  <Title2>Retrieved Context</Title2>
+                  <ReactMarkdown>
+                    {(loading && streamingContext) ? streamingContext : context}
+                  </ReactMarkdown>
+                </div>
+              }
+            </DarkBox> 
+          }
 
           {(loading && !streamingText) && <Ellipsis />}
 
         </div>
-        
+
         {/* Floating input */}
         <div className="sticky bottom-4 z-10 px-4">
-          <div className="rounded-xl bg-zinc-700 inset-ring inset-ring-zinc-600 max-h-[50vh] overflow-y-auto">
-            <form onSubmit={handleSubmit} className="flex flex-col p-1 gap-1 flex flex-col">
-              <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Enter your prompt..."
-                className="w-full min-h-24 p-4 resize-none rounded-lg bg-zinc-800 border-1 border-zinc-600 focus:outline-hidden placeholder:text-zinc-400 text-zinc-200"
-              />
+          <LightOuterBox>
+            <FormWrapper func={handleSubmit}>
+              <Textarea val={prompt} func={(e) => setPrompt(e.target.value)} plac="Enter your prompt..." />
 
-              <div className="bg-zinc-600 rounded-lg border-zinc-500 border-1 outline-2 outline-zinc-800 flex flex-row">
-                <button type="button" className="m-2 px-4 py-2 rounded-xl bg-zinc-800 text-zinc-400" onClick={() => setCollapseContext(prev => !prev)}>
-                  {collapseContext ? "Show context" : "Hide context"}
-                </button>
-                <button type="button" className="m-2 px-4 py-2 rounded-xl bg-zinc-800 text-zinc-400" onClick={() => setCollapseQueries(prev => !prev)}>
-                  {collapseQueries ? "Show queries" : "Hide queries"}
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="m-2 px-4 py-2 bg-blue-600 text-zinc-200 rounded-xl ml-auto"
-                >
-                  {loading ? "Generating..." : "Send"}
-                </button>
-              </div>
+              <LightBox>
+                <div className="flex flex-row">
+                  <Button func={() => setCollapseContext(prev => !prev)}>{collapseContext ? "Show context" : "Hide context"}</Button>
+                  <Button func={() => setCollapseQueries(prev => !prev)}>{collapseQueries ? "Show queries" : "Hide queries"}</Button>
+                  <SubmitButton isDisabled={loading}>{loading ? "Generating..." : "Send"}</SubmitButton>
+                </div>
+              </LightBox>
+            </FormWrapper>
 
-              {(!collapseQueries || !collapseContext) &&
-                <div className="p-4 rounded-lg bg-zinc-800 border-1 border-zinc-600 text-zinc-200">
-                  {!collapseQueries &&
-                    <div>
-                      <h3>Generated Queries:</h3>
-                      <ul>{queries.map((q, i) => <li key={i}>{q}</li>)}</ul>
-                    </div>
-                  }
-
-                  {(!collapseQueries && !collapseContext) && <br />}
-
-                  {!collapseContext &&
-                    <div>
-                      <h3>Retrieved Context:</h3>
-                      <ReactMarkdown>{(loading && streamingContext) ? streamingContext : context}</ReactMarkdown>
-                    </div>
-                  }
-                </div> 
-              }
-
-            </form>
-
-          </div>
+          </LightOuterBox>
         </div>
 
       </div>

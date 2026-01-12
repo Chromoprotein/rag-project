@@ -21,7 +21,7 @@
   "scripts": {
     "start": "react-scripts start",
     "server": "python ../app.py",
-    "tailwind": "npx tailwindcss -i ./src/input.css -o ./src/output.css --watch",
+    "tailwind": "npx tailwindcss -i ./src/styles/input.css -o ./src/styles/output.css --watch",
     "dev": "concurrently \"npm run start\" \"npm run server\" \"npm run tailwind\"",
     "build": "react-scripts build",
     "test": "react-scripts test",

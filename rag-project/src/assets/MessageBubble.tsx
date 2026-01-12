@@ -1,5 +1,5 @@
 import ReactMarkdown from "react-markdown";
-import { ChatMessage } from "./Types.tsx";
+import { ChatMessage } from "../utils/Types.tsx";
 
 interface BubbleProps {
     key: number | string;
