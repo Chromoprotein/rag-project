@@ -6,6 +6,7 @@ import FactsTable from "./FactsTable.tsx";
 import GenerateText from "./GenerateText.tsx";
 import Navbar from "./Navbar.tsx";
 import WritingStyle from "./WritingStyle.tsx";
+import Test from "./Test.tsx";
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
                     <Route path="/" element={<GenerateText/>} />
                     <Route path="facts" element={<FactsTable/>} />
                     <Route path="style" element={<WritingStyle/>} />
+                    <Route path="test" element={<Test/>} />
                 </Routes>
             </main>
 

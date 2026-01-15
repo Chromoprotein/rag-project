@@ -245,6 +245,9 @@
   .min-h-24 {
     min-height: calc(var(--spacing) * 24);
   }
+  .min-h-\[50vh\] {
+    min-height: 50vh;
+  }
   .min-h-screen {
     min-height: 100vh;
   }
@@ -447,18 +450,15 @@
   }
 }
 .loader {
-  ---dotSize: 20px;
-  ---animationTime: 0.8s;
-  --color-pop: rgb(44, 154, 222);
   margin-left: 20px;
 }
 .loader span {
   display: inline-block;
-  width: var(---dotSize);
-  height: var(---dotSize);
-  background: var(--color-pop);
-  border-radius: var(---dotSize);
-  animation: loader var(---animationTime) infinite alternate;
+  width: 20px;
+  height: 20px;
+  background: rgb(44, 154, 222);
+  border-radius: 20px;
+  animation: loader 0.8s infinite alternate;
 }
 .loader span:nth-of-type(2) {
   animation-delay: 0.2s;
@@ -476,27 +476,18 @@
     transform: scale(1);
   }
 }
-.loadingContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
+.skeleton {
+  background: linear-gradient(90deg, oklch(27.4% 0.006 286.033) 25%, oklch(37% 0.013 285.805) 50%, oklch(27.4% 0.006 286.033) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
-.spinner {
-  border: 5px solid var(--color-pop);
-  border-top: 5px solid var(--color-pop);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-.bigSpinner {
-  width: 50px;
-  height: 50px;
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 @property --tw-space-y-reverse {
   syntax: "*";
@@ -581,11 +572,6 @@
   syntax: "*";
   inherits: false;
   initial-value: solid;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {

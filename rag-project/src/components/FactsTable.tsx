@@ -10,7 +10,7 @@ import LightOuterBox from "../assets/LightOuterBox.tsx";
 import FormWrapper from "../assets/FormWrapper.tsx";
 import DropdownMenu from "../assets/DropdownMenu.tsx";
 import { Fact } from "../utils/Types.tsx";
-import { Spinner } from "../assets/Spinner.tsx";
+import Skeleton from "../assets/Skeleton.tsx";
 
 function FactsTable() {
   const [facts, setFacts] = useState<Fact[]>([]);
@@ -22,18 +22,18 @@ function FactsTable() {
   });
 
   const [saving, setSaving] = useState<Record<string, boolean>>({});
-  const [loading, setLoading] = useState<Boolean>(false);
+  const [loading, setLoading] = useState<Boolean>(true);
 
   // Fetch from backend
   const fetchFacts = async () => {
     try {
-      setLoading(true);
       const res = await fetch("http://localhost:5000/facts");
       const data = await res.json();
       setFacts(data);
       setDraftFacts(data);
     } catch (err) {
       console.error(err);
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -109,8 +109,6 @@ function FactsTable() {
 
   return (
     <div className="max-w-3xl mx-auto w-full h-full pb-4">
-    
-      {loading && <Spinner />}
 
       <div className="flex flex-col gap-5">
 
@@ -132,6 +130,8 @@ function FactsTable() {
             </LightBox>
           </FormWrapper>
         </LightOuterBox>
+
+        {loading && <Skeleton />}
 
         {/* Facts list */}
         {categoryOrder.map((category) => (
