@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-
-type Style = {
-    pov: string,
-    tense: string,
-    style: string,
-};
+import { Style } from "../utils/Types.tsx";
+import LightOuterBox from "../assets/LightOuterBox.tsx";
+import Textarea from "../assets/Textarea.tsx";
+import FormWrapper from "../assets/FormWrapper.tsx";
+import Title1 from "../assets/Title1.tsx";
+import SubmitButton from "../assets/SubmitButton.tsx";
+import LightBox from "../assets/LightBox.tsx";
+import DropdownMenu from "../assets/DropdownMenu.tsx";
+import PageSizeWrapper from "../assets/PageSizeWrapper.tsx";
 
 export default function WritingStyle() {
 
@@ -46,39 +49,34 @@ export default function WritingStyle() {
     }, []);
 
     return (
-        <div className="p-6 max-w-2xl mx-auto text-zinc-200">
-            <h3 className="text-xl font-bold mb-3">Writing Style Settings</h3>
+        <PageSizeWrapper>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                
-                {selectOptions.map(({ name, value, options }, index) => {
-                    return <select
-                        key={index}
-                        value={value}
-                        className="border border-slate-300 rounded-md p-2 text-sm"
-                        name={name}
-                        onChange={(e) =>
-                            setWritingStyle((prev) => ({ ...prev, [name]: e.target.value }))
-                        }
-                    >
-                        {options.map((o, i) => <option key={i} value={o}>{o}</option>)}
-                    </select>
-                })}
+            <div className="flex flex-col gap-5">
 
-                <textarea
-                    value={writingStyle.style}
-                    onChange={(e) => setWritingStyle((prev) => ({ ...prev, style: e.target.value }))}
-                    placeholder="Describe your writing style..."
-                    className="w-full p-2 border rounded-lg"
-                />
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="m-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
-                    >
-                    {loading ? "Saving..." : "Save"}
-                </button>
-            </form>
-        </div>
+                <LightOuterBox>
+                    <FormWrapper func={handleSubmit}>
+                        <Title1>Writing Style</Title1>
+                        <Textarea val={writingStyle.style} func={(e) => setWritingStyle((prev) => ({ ...prev, style: e.target.value }))} plac="Describe your writing style" />
+
+                        <LightBox>
+                            <div className="flex flex-row">
+                                {selectOptions.map(({ name, value, options }, index) => {
+                                    return <DropdownMenu 
+                                        key={index}
+                                        val={value} 
+                                        func={(e) =>
+                                            setWritingStyle((prev) => ({ ...prev, [name]: e.target.value }))} 
+                                        options={options} 
+                                    />
+                                })}
+                                <SubmitButton isDisabled={loading}>{loading ? "Saving..." : "Save"}</SubmitButton>
+                            </div>
+                        </LightBox>
+
+                    </FormWrapper>
+                </LightOuterBox>
+
+            </div>
+        </PageSizeWrapper>
     );
 }

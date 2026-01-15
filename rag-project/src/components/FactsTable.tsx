@@ -11,6 +11,7 @@ import FormWrapper from "../assets/FormWrapper.tsx";
 import DropdownMenu from "../assets/DropdownMenu.tsx";
 import { Fact } from "../utils/Types.tsx";
 import Skeleton from "../assets/Skeleton.tsx";
+import PageSizeWrapper from "../assets/PageSizeWrapper.tsx";
 
 function FactsTable() {
   const [facts, setFacts] = useState<Fact[]>([]);
@@ -108,7 +109,7 @@ function FactsTable() {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto w-full h-full pb-4">
+    <PageSizeWrapper>
 
       <div className="flex flex-col gap-5">
 
@@ -172,7 +173,7 @@ function FactsTable() {
 
       </div>
 
-    </div>
+    </PageSizeWrapper>
   );
 }
 

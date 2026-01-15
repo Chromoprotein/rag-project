@@ -10,12 +10,35 @@ import uuid
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"])
 
+# --- Helper functions ---
+
+# Helper function to read the file
+def read_style():
+    if not os.path.exists(STYLE_FILE):
+        # Return default if file doesn't exist
+        return {
+            "pov": "First person",
+            "tense": "Past tense",
+            "style": ""
+        }
+    with open(STYLE_FILE, "r") as f:
+        return json.load(f)
+
+# Helper function to write to the file
+def write_style(style_data):
+    with open(STYLE_FILE, "w") as f:
+        json.dump(style_data, f, indent=4)
+
+# --- Writing generator ---
+
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.get_json()
     messages = data.get("messages", [])
     latest_user_message = messages[-1]["content"] if messages else ""
     old_context = data.get("old_context", "")
+
+    writing_style = read_style() # get the writing style instructions
 
     def event_stream():
 
@@ -35,7 +58,7 @@ def generate():
 
         # --- STREAM GENERATED TEXT ---
         buffer = ""
-        for chunk in stream_generated_text(messages, full_context):
+        for chunk in stream_generated_text(messages, full_context, writing_style):
             buffer += chunk
             
             # Send buffer when we hit newlines or buffer gets large enough
@@ -119,23 +142,6 @@ def delete_fact(fact_id):
 # --- Writing style endpoints ---
 
 STYLE_FILE = "writing_style.json"
-
-# Helper function to read the file
-def read_style():
-    if not os.path.exists(STYLE_FILE):
-        # Return default if file doesn't exist
-        return {
-            "pov": "First person",
-            "tense": "Past tense",
-            "style": ""
-        }
-    with open(STYLE_FILE, "r") as f:
-        return json.load(f)
-
-# Helper function to write to the file
-def write_style(style_data):
-    with open(STYLE_FILE, "w") as f:
-        json.dump(style_data, f, indent=4)
 
 # Route to GET the current writing style
 @app.route("/getStyle", methods=["GET"])

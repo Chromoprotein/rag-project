@@ -14,6 +14,7 @@ import LightOuterBox from "../assets/LightOuterBox.tsx";
 import FormWrapper from "../assets/FormWrapper.tsx";
 import Title1 from "../assets/Title1.tsx";
 import Title2 from "../assets/Title2.tsx";
+import PageSizeWrapper from "../assets/PageSizeWrapper.tsx";
 
 function GenerateText() {
   const [prompt, setPrompt] = useState(""); // New prompt
@@ -110,7 +111,7 @@ function GenerateText() {
   };
 
   return (
-      <div className="max-w-3xl mx-auto h-full relative w-full relative">
+      <PageSizeWrapper>
 
       {/* SCROLL CONTAINER */}
       <div className="relative flex flex-col h-full">
@@ -159,7 +160,7 @@ function GenerateText() {
         </div>
 
         {/* Floating input */}
-        <div className="sticky bottom-4 z-10 px-4">
+        <div className="sticky bottom-4 z-10">
           <LightOuterBox>
             <FormWrapper func={handleSubmit}>
               <Textarea val={prompt} func={(e) => setPrompt(e.target.value)} plac="Enter your prompt..." />
@@ -178,7 +179,7 @@ function GenerateText() {
 
       </div>
 
-      </div>
+      </PageSizeWrapper>
   );
 }
 

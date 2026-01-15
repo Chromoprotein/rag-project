@@ -38,3 +38,9 @@ export type Fact = {
   text: string;
   category: string;
 }
+
+export type Style = {
+    pov: string,
+    tense: string,
+    style: string,
+};

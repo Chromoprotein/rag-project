@@ -126,15 +126,23 @@ def generate_queries_and_context_stream(latest_user_message, old_context):
             if count >= 20:
                 return
 
-def stream_generated_text(chat_history, context):
+def stream_generated_text(chat_history, context, writing_style):
 
     # build a new latest message for the AI
     latest_user = chat_history[-1]["content"]
 
-    new_user_message = f"""
-    You may use the context below to stay consistent with story facts.
-    Context:
+    # add writing style to context
+    context_and_style = f""" 
+    Context: 
     {context}
+
+    Writing style: 
+    {writing_style}
+    """
+
+    new_user_message = f"""
+    You may use the context below to stay consistent with story facts. Follow writing style guidelines if the user has defined them.
+    {context_and_style}
 
     User prompt:
     {latest_user}
